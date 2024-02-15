@@ -3,12 +3,7 @@ import { emissionRoutes } from "./routes/emission";
 import cors from "@fastify/cors";
 
 declare module "fastify" {
-  export interface FastifyRequest {
-    user: {
-      id: string;
-      name: string;
-    };
-  }
+  export interface FastifyRequest {}
 }
 
 export async function buildServer() {
