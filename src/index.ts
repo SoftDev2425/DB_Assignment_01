@@ -1,22 +1,23 @@
-import { fastify } from "fastify";
-import pino from "pino";
+import { buildServer } from "./server";
 
-const server = fastify({
-  logger: pino({ level: "info" }),
-});
+async function startServer() {
+  const server = await buildServer();
 
-const startServer = async () => {
-  try {
-    server.listen({ port: 3000, host: "0.0.0.0" }, function (err, address) {
-      if (err) {
-        server.log.error(err);
-        process.exit(1);
-      }
-      server.log.info(`server listening on ${address}`);
+  server.listen({ port: 3000, host: "0.0.0.0" }, function (err, address) {
+    if (err) {
+      server.log.error(err);
+      process.exit(1);
+    }
+    server.log.info(`server listening on ${address}`);
+  });
+
+  //@ts-ignore
+  [("SIGINT", "SIGTERM")].forEach((signal) => {
+    process.on(signal, async () => {
+      await server.close();
+      process.exit(0);
     });
-  } catch (error) {
-    server.log.error(error);
-  }
-};
+  });
+}
 
 startServer();
