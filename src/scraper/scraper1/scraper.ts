@@ -55,6 +55,8 @@ const scraper1 = async () => {
 
       try {
         for (const record of records) {
+          // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
+
           const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
           BEGIN
