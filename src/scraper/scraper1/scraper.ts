@@ -38,6 +38,7 @@ const scraper1 = async () => {
         reductionTargetPercentage: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
         targetYear: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
         comment: data[12],
+        sector: data[6],
       };
 
       obj.organisation = organisation;
@@ -53,35 +54,45 @@ const scraper1 = async () => {
       const con = await sql.connect(mssqlConfig);
 
       records.forEach(async (record) => {
-
         // create country
-        const newCountry = await con.query`INSERT INTO Countries (name) VALUES (${record.country.name})`;
+        const newCountry = await con.query`
+        IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
+        BEGIN
+            INSERT INTO Countries (name)
+        END`;
 
         // create city --> add countryId if exists
-        const newCity = await con.query`INSERT INTO Cities (name, C40Status, countryId) VALUES (${
-          record.city.name
-        }, ${record.city.C40Status}, ${newCountry.recordset[0].id}) 
-        SELECT ${record.city.name}
-        WHERE NOT EXISTS (
-          SELECT 1 FROM Cities WHERE name = ${record.city.name}
-        )`;
+        const newCity = await con.query`
+          IF NOT EXISTS (SELECT 1 FROM Cities WHERE name = ${record.city.name})
+          BEGIN
+              INSERT INTO Cities (name, C40Status, countryID) VALUES (${record.city.name}, ${record.city.C40Status}, ${newCountry.recordset[0].id})
+          END
+          `;
 
         // create organisation
-          const newOrganisation = await con.query`
-            INSERT INTO Organsations (name, accountNo, cityID, countryID) VALUES (${record.organisation.name}, ${record.organisation.accountNo}, ${newCity.recordset[0].id}, ${newCountry.recordset[0].id}) 
-            SELECT ${record.organisation.accountNo}
-            WHERE NOT EXISTS (
-              SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo}
-            )`;
-          `
+        const newOrganisation = await con.query`
+            IF NOT  EXISTS (SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo})
+            BEGIN
+                INSERT INTO Organisations (name, accountNo, cityID, countryID) VALUES (${record.organisation.name}, ${record.organisation.accountNo}, ${newCity.recordset[0].id}, ${newCountry.recordset[0].id})
+            END            
+            `;
+
+        const newSector = await con.query`
+            IF NOT EXISTS (SELECT 1 FROM Sectors WHERE name = ${record.target.sector})
+            BEGIN
+                INSERT INTO Sectors (name) VALUES (${record.target.sector})
+            END
+            
+        `;
 
         // create target --> add cityId, organizationId if exists
-              
+        const newTarget = await con.query`
+          INSERT INTO Targets (reportingYear, baselineYear, baselineEmissionsCO2, reductionTargetPercentage, targetYear, comment, cityID, organisationID, sectorID) VALUES (${record.target.reportingYear}, ${record.target.baselineYear}, ${record.target.baselineEmissionsCO2}, ${record.target.reductionTargetPercentage}, ${record.target.targetYear}, ${record.target.comment}, ${newCity.recordset[0].id}, ${newOrganisation.recordset[0].id}, ${newSector.recordset[0].id})
+          `;
 
-
+        await con.close();
+      });
     });
-    await con.close();
-
-});
+};
 
 export default scraper1;
