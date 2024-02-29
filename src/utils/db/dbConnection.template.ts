@@ -2,10 +2,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const mssqlConfig = {
-  database: "DB_Assignment_1",
+  database: "YOUR_DATABASE_NAME",
   port: 1433,
-  user: "sa",
-  password: "StrongPassword123!",
+  user: "YOUR_DB_USERNAME",
+  password: "YOUR_DB_PASSWORD",
   server: "localhost",
   pool: {
     max: 10,

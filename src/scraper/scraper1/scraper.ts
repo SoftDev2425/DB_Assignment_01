@@ -4,7 +4,7 @@ import { mssqlConfig } from "../../utils/db/dbConnection";
 import sql from "mssql";
 
 const scraper1 = async () => {
-  const path = "../data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
+  const path = "./data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
 
   const records: any[] = [];
 

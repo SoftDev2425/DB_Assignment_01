@@ -27,6 +27,16 @@ Explain a lot here......
 
 Create a .env file with the keys from the already existing .env.template file and insert your own values.
 
+copy dbConnection.template.ts and create dbConnection.ts under utils/db.. change...
+well aware that .env is a better solution, but they can't be loaded in wqhen running ts-node....
+
+```
+DB_NAME="YOUR_DB_NAME"
+DB_PORT="1433"
+DB_USER="YOUR_DB_USERNAME"
+DB_PASSWORD="YOUR_DB_PASSWORD"
+```
+
 ### Step 3: Install dependencies
 
 Run:
@@ -35,9 +45,14 @@ Run:
 npm install
 ```
 
-### Step 4: Run database scripts
+### Step 4: Run database scripts + add data
 
 Execute the .sql scripts from [HERE](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/scripts) in your own database.
+To add data open a new terminal and write
+
+```
+cd src && ts-node scraper.ts
+```
 
 ### Step 5: Run server
 
