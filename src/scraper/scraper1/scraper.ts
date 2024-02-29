@@ -19,7 +19,7 @@ const scraper1 = async () => {
 
       const organisation = {
         name: data[0],
-        accountNo: data[1],
+        accountNo: parseInt(data[1]) || null,
       };
 
       const country = {
@@ -78,30 +78,48 @@ const scraper1 = async () => {
           END
           `;
 
-          //   // create organisation
-          //   const newOrganisation = await con.query`
-          //     IF NOT EXISTS (SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo})
-          //     BEGIN
-          //         INSERT INTO Organisations (name, accountNo, cityID, countryID)
-          //         VALUES (${record.organisation.name}, ${record.organisation.accountNo}, ${newCity.recordset[0].id}, ${newCountry.recordset[0].id})
-          //     END
-          //     `;
+          // create organisation
+          const newOrganisation = await con.query`
+              IF NOT EXISTS (SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo})
+              BEGIN
+                  DECLARE @city_id uniqueidentifier;
+                  DECLARE @country_id uniqueidentifier;
 
-          //   const newSector = await con.query`
-          //     IF NOT EXISTS (SELECT 1 FROM Sectors WHERE name = ${record.target.sector})
-          //     BEGIN
-          //         INSERT INTO Sectors (name)
-          //         VALUES (${record.target.sector})
-          //     END
-          // `;
+                  SELECT @city_id = id FROM Cities WHERE name = ${record.city.name};
+                  SELECT @country_id = id FROM Countries WHERE name = ${record.country.name};
 
-          //   // create target
-          //   const newTarget = await con.query`
-          //   BEGIN
-          //     INSERT INTO Targets (reportingYear, baselineYear, baselineEmissionsCO2, reductionTargetPercentage, targetYear, comment, cityID, organisationID, sectorID)
-          //     VALUES (${record.target.reportingYear}, ${record.target.baselineYear}, ${record.target.baselineEmissionsCO2}, ${record.target.reductionTargetPercentage}, ${record.target.targetYear}, ${record.target.comment}, ${newCity.recordset[0].id}, ${newOrganisation.recordset[0].id}, ${newSector.recordset[0].id})
-          //   END
-          //   `;
+                  IF @country_id IS NOT NULL AND @city_id IS NOT NULL
+                  BEGIN
+                    INSERT INTO Organisations (name, accountNo, countryID, cityID)
+                    VALUES (${record.organisation.name}, ${record.organisation.accountNo}, @country_id, @city_id)
+                  END
+              END
+              `;
+
+          const newSector = await con.query`
+              IF NOT EXISTS (SELECT 1 FROM Sectors WHERE name = ${record.target.sector})
+              BEGIN
+                  INSERT INTO Sectors (name)
+                  VALUES (${record.target.sector})
+              END
+          `;
+
+          // create target
+          const newTarget = await con.query`
+            BEGIN
+                DECLARE @organisation_id uniqueidentifier;
+                DECLARE @sector_id uniqueidentifier;
+
+                SELECT @organisation_id = id FROM Organisations WHERE accountNo = ${record.organisation.accountNo};
+                SELECT @sector_id = id FROM Sectors WHERE name = ${record.target.sector};
+
+                IF @organisation_id IS NOT NULL AND @sector_id IS NOT NULL
+                BEGIN
+                  INSERT INTO Targets (reportingYear, baselineYear, baselineEmissionsCO2, reductionTargetPercentage, targetYear, comment, organisationID, sectorID)
+                  VALUES (${record.target.reportingYear}, ${record.target.baselineYear}, ${record.target.baselineEmissionsCO2}, ${record.target.reductionTargetPercentage}, ${record.target.targetYear}, ${record.target.comment}, @organisation_id, @sector_id)
+                END
+            END
+            `;
         }
       } catch (error) {
         console.log(error);
