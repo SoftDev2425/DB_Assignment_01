@@ -14,30 +14,19 @@ Group E:
 - Owais Dashti
 - Rasmus Taul
 
-We have done db stuff with an API layer showcasing our querying.
-10 different questions that we base ... off can be found here..
+Our plan involves developing a simple server where the developer can access our server,
+which in turn interacts with the underlying database layer through various procedures
+corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)).
 <br>
 Explain a lot here......
+
+![ER-diagram](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/imgs/ER_diagram_LATEST.png)
 
 ## How to run
 
 ### Step 1: Clone the project
 
-### Step 2: Create .env
-
-Create a .env file with the keys from the already existing .env.template file and insert your own values.
-
-copy dbConnection.template.ts and create dbConnection.ts under utils/db.. change...
-well aware that .env is a better solution, but they can't be loaded in wqhen running ts-node....
-
-```
-DB_NAME="YOUR_DB_NAME"
-DB_PORT="1433"
-DB_USER="YOUR_DB_USERNAME"
-DB_PASSWORD="YOUR_DB_PASSWORD"
-```
-
-### Step 3: Install dependencies
+### Step 2: Install dependencies
 
 Run:
 
@@ -45,13 +34,23 @@ Run:
 npm install
 ```
 
+### Step 3: Configure DB-connection
+
+Under `src/utils/db` change `dbConnection.template.ts` filename to `dbConnection.ts` and apply your own database configuration. (we are well aware that .env is a better solution, but they can't be loaded when running ts-node in the upcoming way)
+The following values will suffice:
+
+- **database**
+- **user**
+- **password**
+
 ### Step 4: Run database scripts + add data
 
-Execute the .sql scripts from [HERE](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/scripts) in your own database.
-To add data open a new terminal and write
+Firstly, execute the .sql scripts from [HERE](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/scripts) in your own database.
+
+Secondly, to add data to the database, open a new terminal, navigate to `src/scraper`and run
 
 ```
-cd src && ts-node scraper.ts
+ts-node index.ts
 ```
 
 ### Step 5: Run server
@@ -62,65 +61,95 @@ Run:
 npm run dev
 ```
 
-The API will now be available at [http://localhost:3000](http://localhost:3000/) || [http://0.0.0.0:3000](http://0.0.0.0:3000/). Check the below API docs to read more.
+The API will now be available at [http://localhost:3000](http://localhost:3000/) || [http://0.0.0.0:3000](http://0.0.0.0:3000/). Check out the API docs below.
 
 ## Api docs:
 
-### 1. Get by...
+### 1. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 2. Get by...
+### 2. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 3. Get by...
+### 3. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 4. Get by...
+### 4. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 5. Get by...
+### 5. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 6. Get by...
+### 6. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 7. Get by...
+### 7. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 8. Get by...
+### 8. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 9. Get by...
+### 9. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
 ```
 
-### 10. Get by...
+### 10. /api/...
+
+Question: ... <br>
+Example response:
 
 ```
 /.../...
