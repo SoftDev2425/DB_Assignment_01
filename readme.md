@@ -20,7 +20,7 @@ corresponding to our 10 relevant questions to the given datasets ([found here](h
 <br>
 Explain a lot here......
 
-![ER-diagram](/imgs/ER_diagram_latest.png)
+![ER-diagram](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/imgs/ER_diagram_LATEST.png)
 
 ## How to run
 
