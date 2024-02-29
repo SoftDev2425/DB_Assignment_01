@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const mssqlConfig = {
-  database: process.env.DB_NAME,
+  database: "DB_assignment_1",
   port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD as string,
+  user: "sa", // should be in .env
+  password: "StrongPassword123!", // should be in .env
   server: "localhost",
   pool: {
     max: 10,

@@ -1,5 +1,7 @@
 import fs from "fs";
 import { parse } from "csv-parse";
+import { mssqlConfig } from "../../utils/db/dbConnection";
+import sql from "mssql";
 
 const scraper1 = async () => {
   const path = "../data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
@@ -15,7 +17,7 @@ const scraper1 = async () => {
     .on("data", (data) => {
       const obj: any = {};
 
-      const organization = {
+      const organisation = {
         name: data[0],
         accountNo: data[1],
       };
@@ -38,23 +40,48 @@ const scraper1 = async () => {
         comment: data[12],
       };
 
-      obj.organization = organization;
+      obj.organisation = organisation;
       obj.country = country;
       obj.city = city;
       obj.target = target;
 
       records.push(obj);
-
-      // read countries from the csv file and insert to database
-
-      // read cities from the csv file and insert to database
-
-      // read organizations from the csv file and insert to database
     })
-    .on("end", () => {
+    .on("end", async () => {
       console.log("Read all records in csv", records.length);
-      console.log(records[1]);
+
+      const con = await sql.connect(mssqlConfig);
+
+      records.forEach(async (record) => {
+
+        // create country
+        const newCountry = await con.query`INSERT INTO Countries (name) VALUES (${record.country.name})`;
+
+        // create city --> add countryId if exists
+        const newCity = await con.query`INSERT INTO Cities (name, C40Status, countryId) VALUES (${
+          record.city.name
+        }, ${record.city.C40Status}, ${newCountry.recordset[0].id}) 
+        SELECT ${record.city.name}
+        WHERE NOT EXISTS (
+          SELECT 1 FROM Cities WHERE name = ${record.city.name}
+        )`;
+
+        // create organisation
+          const newOrganisation = await con.query`
+            INSERT INTO Organsations (name, accountNo, cityID, countryID) VALUES (${record.organisation.name}, ${record.organisation.accountNo}, ${newCity.recordset[0].id}, ${newCountry.recordset[0].id}) 
+            SELECT ${record.organisation.accountNo}
+            WHERE NOT EXISTS (
+              SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo}
+            )`;
+          `
+
+        // create target --> add cityId, organizationId if exists
+              
+
+
     });
-};
+    await con.close();
+
+});
 
 export default scraper1;
