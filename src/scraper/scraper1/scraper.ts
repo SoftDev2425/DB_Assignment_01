@@ -49,7 +49,8 @@ const scraper1 = async () => {
       records.push(obj);
     })
     .on("end", async () => {
-      console.log("Read all records in csv", records.length);
+      console.log("Read all records in csv", path, "(Rows:", records.length, ")");
+      console.log("Inserting records into database...");
 
       const con = await sql.connect(mssqlConfig);
 
@@ -123,6 +124,8 @@ const scraper1 = async () => {
             END
             `;
         }
+
+        console.log("Records inserted into database");
       } catch (error) {
         console.log(error);
       }

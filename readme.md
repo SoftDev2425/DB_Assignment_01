@@ -45,13 +45,15 @@ The following values will suffice:
 
 ### Step 4: Run database scripts + add data
 
-Firstly, execute the .sql scripts from [HERE](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/scripts) in your own database.
+Firstly, execute the .sql scripts found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/scripts) in your own database.
 
 Secondly, to add data to the database, open a new terminal, navigate to `src/scraper`and run
 
 ```
 ts-node index.ts
 ```
+
+this will read the data from all .csv-files and add the appropriate values to our defined tables.
 
 ### Step 5: Run server
 
