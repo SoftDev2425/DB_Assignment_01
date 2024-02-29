@@ -1,13 +1,7 @@
-CREATE TABLE Regions (
-	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
-	name varchar(100)
-)
-
 CREATE TABLE Countries (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
 	name varchar(60),
-	regionID uniqueidentifier,
-	FOREIGN KEY (regionID) REFERENCES Regions(id)
+	regionName varchar(60)
 )
 
 CREATE TABLE Cities (
@@ -29,6 +23,7 @@ CREATE TABLE Populations (
 CREATE TABLE Organisations (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
 	accountNo int,
+	name varchar(100),
 	cityID uniqueidentifier,
 	countryID uniqueidentifier,
 	FOREIGN KEY (cityID) REFERENCES Cities(id),
@@ -51,6 +46,7 @@ CREATE TABLE Targets (
 	baslineYear int,
 	targetYear int,
 	reductionTargetPercentage int,
+	baselineEmissionsCO2 int,
 	comment varchar(MAX),
 	organisationID uniqueidentifier,
 	sectorID uniqueidentifier,
