@@ -141,7 +141,8 @@ const scraper3 = async () => {
           // CREATES GHG_EmissionStatus AND new GHG_Emission
           const newGHG_Emission = await con.query`
               BEGIN
-                DECLARE @GHG_EmissionStatus_id uniqueidentifier;
+
+                DECLARE @GHG_EmissionStatus_id TABLE (Id UNIQUEIDENTIFIER);
                 DECLARE @organisation_id uniqueidentifier;
                 DECLARE @emissionStatusType_id uniqueidentifier;
                 DECLARE @emissionStatus_id uniqueidentifier;
@@ -149,12 +150,13 @@ const scraper3 = async () => {
                 SELECT @emissionStatusType_id = id FROM EmissionStatusTypes WHERE type = ${record.emissionStatusTypes.type};
 
                 INSERT INTO GHG_EmissionStatus (description, emissionStatusTypeID)
-                OUTPUT INSERTED.id INTO @GHG_EmissionStatus_id 
+                OUTPUT inserted.Id INTO @GHG_EmissionStatus_id
                 VALUES (${record.GHG_emissions.GHG_EmissionsStatus.description}, @emissionStatusType_id);
+                SELECT Id FROM @GHG_EmissionStatus_id;
 
                 SELECT @organisation_id = id FROM Organisations WHERE accountNo = ${record.organisation.accountNo};
 
-                IF @organisation_id IS NOT NULL AND @GHG_EmissionStatus_id IS NOT NULL
+                IF @organisation_id IS NOT NULL AND EXISTS (SELECT 1 FROM @GHG_EmissionStatus_id)
                 BEGIN
                   INSERT INTO GHG_Emissions (reportingYear, measurementYear, boundary, methodology, methodologyDetails, gassesIncluded, totalCityWideEmissionsCO2, totalScope1_CO2, totalScope2_CO2, organisationID, GHG_EmissionStatusID)
                   VALUES (${record.GHG_emissions.reportingYear}, ${record.GHG_emissions.measurementYear}, ${record.GHG_emissions.boundary}, ${record.GHG_emissions.methodology}, ${record.GHG_emissions.methodologyDetails}, ${record.GHG_emissions.gassesIncluded}, ${record.GHG_emissions.totalCityWideEmissionsCO2}, ${record.GHG_emissions.totalScope1CO2}, ${record.GHG_emissions.totalScope2CO2}, @organisation_id, @GHG_EmissionStatus_id)
