@@ -61,13 +61,6 @@ CREATE TABLE EmissionStatusTypes (
 	type varchar(75)
 )
 
-CREATE TABLE GHG_EmissionsStatus (
-	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
-	description varchar(MAX),
-	emissionStatusTypeID uniqueidentifier,
-	FOREIGN KEY (emissionStatusTypeID) REFERENCES EmissionStatusTypes(id)
-)
-
 CREATE TABLE GHG_Emissions (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
 	reportingYear INT,
@@ -75,12 +68,13 @@ CREATE TABLE GHG_Emissions (
 	boundary varchar(350),
 	methodology varchar(250),
 	methodologyDetails varchar(MAX),
+	description varchar(MAX),
 	gassesIncluded varchar(100),
 	totalCityWideEmissionsCO2 FLOAT,
 	totalScope1_CO2 FLOAT,
 	totalScope2_CO2 FLOAT,
 	organisationID uniqueidentifier,
-	GHG_EmissionsStatusID uniqueidentifier,
+	emissionStatusTypeID uniqueidentifier,
 	FOREIGN KEY (organisationID) REFERENCES Organisations(id),
-	FOREIGN KEY (GHG_EmissionsStatusID) REFERENCES GHG_EmissionsStatus(id),
+	FOREIGN KEY (emissionStatusTypeID) REFERENCES EmissionStatusTypes(id)
 )

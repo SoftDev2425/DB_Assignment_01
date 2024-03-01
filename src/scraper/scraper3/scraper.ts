@@ -45,13 +45,11 @@ const scraper3 = async () => {
         boundary: data[7] || "",
         methodology: data[8] || "",
         methodologyDetails: data[9] || "",
+        description: data[15] || "",
         gassesIncluded: data[10] || "",
         totalCityWideEmissionsCO2: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
         totalScope1CO2: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
         totalScope2CO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
-        GHG_EmissionsStatus: {
-          description: data[15] || "",
-        },
       };
 
       obj.organisation = organisation;
@@ -141,25 +139,16 @@ const scraper3 = async () => {
           // CREATES GHG_EmissionStatus AND new GHG_Emission
           const newGHG_Emission = await con.query`
               BEGIN
-
-                DECLARE @GHG_EmissionStatus_id TABLE (Id UNIQUEIDENTIFIER);
                 DECLARE @organisation_id uniqueidentifier;
                 DECLARE @emissionStatusType_id uniqueidentifier;
-                DECLARE @emissionStatus_id uniqueidentifier;
 
                 SELECT @emissionStatusType_id = id FROM EmissionStatusTypes WHERE type = ${record.emissionStatusTypes.type};
-
-                INSERT INTO GHG_EmissionStatus (description, emissionStatusTypeID)
-                OUTPUT inserted.Id INTO @GHG_EmissionStatus_id
-                VALUES (${record.GHG_emissions.GHG_EmissionsStatus.description}, @emissionStatusType_id);
-                SELECT Id FROM @GHG_EmissionStatus_id;
-
                 SELECT @organisation_id = id FROM Organisations WHERE accountNo = ${record.organisation.accountNo};
 
-                IF @organisation_id IS NOT NULL AND EXISTS (SELECT 1 FROM @GHG_EmissionStatus_id)
+                IF @organisation_id IS NOT NULL AND @emissionStatusType_id IS NOT NULL
                 BEGIN
-                  INSERT INTO GHG_Emissions (reportingYear, measurementYear, boundary, methodology, methodologyDetails, gassesIncluded, totalCityWideEmissionsCO2, totalScope1_CO2, totalScope2_CO2, organisationID, GHG_EmissionStatusID)
-                  VALUES (${record.GHG_emissions.reportingYear}, ${record.GHG_emissions.measurementYear}, ${record.GHG_emissions.boundary}, ${record.GHG_emissions.methodology}, ${record.GHG_emissions.methodologyDetails}, ${record.GHG_emissions.gassesIncluded}, ${record.GHG_emissions.totalCityWideEmissionsCO2}, ${record.GHG_emissions.totalScope1CO2}, ${record.GHG_emissions.totalScope2CO2}, @organisation_id, @GHG_EmissionStatus_id)
+                    INSERT INTO GHG_Emissions (reportingYear, measurementYear, boundary, methodology, methodologyDetails, description, gassesIncluded, totalCityWideEmissionsCO2, totalScope1_CO2, totalScope2_CO2, organisationID, emissionStatusTypeID)
+                    VALUES (${record.GHG_emissions.reportingYear}, ${record.GHG_emissions.measurementYear}, ${record.GHG_emissions.boundary}, ${record.GHG_emissions.methodology}, ${record.GHG_emissions.methodologyDetails}, ${record.GHG_emissions.description}, ${record.GHG_emissions.gassesIncluded}, ${record.GHG_emissions.totalCityWideEmissionsCO2}, ${record.GHG_emissions.totalScope1CO2}, ${record.GHG_emissions.totalScope2CO2}, @organisation_id, @emissionStatusType_id)
                 END
               END
           `;
