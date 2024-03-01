@@ -5,76 +5,77 @@ import sql from "mssql";
 import { format } from "date-fns";
 
 const scraper3 = async () => {
-  const path = "./data/2016_Citywide_GHG_Emissions_20240207.csv";
+  return new Promise((resolve, reject) => {
+    const path = "./data/2016_Citywide_GHG_Emissions_20240207.csv";
 
-  const records: any[] = [];
+    const records: any[] = [];
 
-  const parser = parse({
-    delimiter: ",",
-    from_line: 2,
-  });
+    const parser = parse({
+      delimiter: ",",
+      from_line: 2,
+    });
 
-  fs.createReadStream(path)
-    .pipe(parser)
-    .on("data", (data) => {
-      const obj: any = {};
+    fs.createReadStream(path)
+      .pipe(parser)
+      .on("data", (data) => {
+        const obj: any = {};
 
-      const organisation = {
-        name: data[1].trim(),
-        accountNo: parseInt(data[0]) || null,
-      };
+        const organisation = {
+          name: data[1].trim(),
+          accountNo: parseInt(data[0]) || null,
+        };
 
-      const country = {
-        name: data[2].trim(),
-      };
+        const country = {
+          name: data[2].trim(),
+        };
 
-      const city = {
-        name: data[3].trim(),
-        C40Status: data[4].trim() == "C40" ? true : false,
-        population: {
-          count: parseInt(data[17]) || null,
-          year: parseInt(data[16]) || null,
-        },
-      };
+        const city = {
+          name: data[3].trim(),
+          C40Status: data[4].trim() == "C40" ? true : false,
+          population: {
+            count: parseInt(data[17]) || null,
+            year: parseInt(data[16]) || null,
+          },
+        };
 
-      const emissionStatusTypes = {
-        type: data[14].trim() || "",
-      };
+        const emissionStatusTypes = {
+          type: data[14].trim() || "",
+        };
 
-      const GHG_emissions = {
-        reportingYear: isNaN(parseInt(data[5])) ? null : parseInt(data[5]),
-        measurementYear: isNaN(parseInt(format(new Date(data[6]), "yyyy")))
-          ? null
-          : parseInt(format(new Date(data[6]), "yyyy")),
-        boundary: data[7].trim() || "",
-        methodology: data[8].trim() || "",
-        methodologyDetails: data[9].trim() || "",
-        description: data[15].trim() || "",
-        gassesIncluded: data[10].trim() || "",
-        totalCityWideEmissionsCO2: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
-        totalScope1CO2: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
-        totalScope2CO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
-      };
+        const GHG_emissions = {
+          reportingYear: isNaN(parseInt(data[5])) ? null : parseInt(data[5]),
+          measurementYear: isNaN(parseInt(format(new Date(data[6]), "yyyy")))
+            ? null
+            : parseInt(format(new Date(data[6]), "yyyy")),
+          boundary: data[7].trim() || "",
+          methodology: data[8].trim() || "",
+          methodologyDetails: data[9].trim() || "",
+          description: data[15].trim() || "",
+          gassesIncluded: data[10].trim() || "",
+          totalCityWideEmissionsCO2: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
+          totalScope1CO2: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
+          totalScope2CO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
+        };
 
-      obj.organisation = organisation;
-      obj.country = country;
-      obj.city = city;
-      obj.emissionStatusTypes = emissionStatusTypes;
-      obj.GHG_emissions = GHG_emissions;
+        obj.organisation = organisation;
+        obj.country = country;
+        obj.city = city;
+        obj.emissionStatusTypes = emissionStatusTypes;
+        obj.GHG_emissions = GHG_emissions;
 
-      records.push(obj);
-    })
-    .on("end", async () => {
-      console.log("Read all records in csv", path, "(Rows:", records.length, ")");
-      console.log("Inserting records into database...");
+        records.push(obj);
+      })
+      .on("end", async () => {
+        console.log("Read all records in csv", path, "(Rows:", records.length, ")");
+        console.log("Inserting records into database...");
 
-      const con = await sql.connect(mssqlConfig);
+        const con = await sql.connect(mssqlConfig);
 
-      try {
-        for (const record of records) {
-          // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
+        try {
+          for (const record of records) {
+            // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
 
-          const newCountry = await con.query`
+            const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
           BEGIN
               INSERT INTO Countries (name)
@@ -82,7 +83,7 @@ const scraper3 = async () => {
           END
           `;
 
-          const newCity = await con.query`
+            const newCity = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Cities WHERE name = ${record.city.name})
           BEGIN
               DECLARE @country_id uniqueidentifier;
@@ -97,7 +98,7 @@ const scraper3 = async () => {
           END
           `;
 
-          const newPopulation = await con.query`
+            const newPopulation = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Populations WHERE cityID = (SELECT id FROM Cities WHERE name = ${record.city.name} AND year = ${record.city.population.year}))
           BEGIN
               DECLARE @city_id uniqueidentifier;
@@ -112,8 +113,8 @@ const scraper3 = async () => {
           END
           `;
 
-          // create organisation
-          const newOrganisation = await con.query`
+            // create organisation
+            const newOrganisation = await con.query`
               IF NOT EXISTS (SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo})
               BEGIN
                   DECLARE @city_id uniqueidentifier;
@@ -130,7 +131,7 @@ const scraper3 = async () => {
               END
               `;
 
-          const newEmissionStatusType = await con.query`
+            const newEmissionStatusType = await con.query`
               IF NOT EXISTS (SELECT 1 FROM EmissionStatusTypes WHERE type = ${record.emissionStatusTypes.type})
               BEGIN
                   INSERT INTO EmissionStatusTypes (type)
@@ -138,8 +139,8 @@ const scraper3 = async () => {
               END
           `;
 
-          // CREATES GHG_EmissionStatus AND new GHG_Emission
-          const newGHG_Emission = await con.query`
+            // CREATES GHG_EmissionStatus AND new GHG_Emission
+            const newGHG_Emission = await con.query`
               BEGIN
                 DECLARE @organisation_id uniqueidentifier;
                 DECLARE @emissionStatusType_id uniqueidentifier;
@@ -154,13 +155,15 @@ const scraper3 = async () => {
                 END
               END
           `;
-        }
+          }
 
-        console.log("Records inserted into database");
-      } catch (error) {
-        console.log(error);
-      }
-    });
+          console.log("Scraper 3 done!");
+          resolve("Scraper 3 done!");
+        } catch (error) {
+          reject(error);
+        }
+      });
+  });
 };
 
 export default scraper3;

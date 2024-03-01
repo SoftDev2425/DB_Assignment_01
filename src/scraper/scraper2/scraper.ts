@@ -4,72 +4,73 @@ import { mssqlConfig } from "../../utils/db/dbConnection";
 import sql from "mssql";
 
 const scraper2 = async () => {
-  const path = "./data/2017_Cities_Emissions_Reduction_Targets_20240207.csv";
+  return new Promise((resolve, reject) => {
+    const path = "./data/2017_Cities_Emissions_Reduction_Targets_20240207.csv";
 
-  const records: any[] = [];
+    const records: any[] = [];
 
-  const parser = parse({
-    delimiter: ",",
-    from_line: 2,
-  });
+    const parser = parse({
+      delimiter: ",",
+      from_line: 2,
+    });
 
-  fs.createReadStream(path)
-    .pipe(parser)
-    .on("data", (data) => {
-      const obj: any = {};
+    fs.createReadStream(path)
+      .pipe(parser)
+      .on("data", (data) => {
+        const obj: any = {};
 
-      const organisation = {
-        name: data[1].trim(),
-        accountNo: parseInt(data[0]) || null,
-      };
+        const organisation = {
+          name: data[1].trim(),
+          accountNo: parseInt(data[0]) || null,
+        };
 
-      const country = {
-        name: data[3].trim(),
-        regionName: data[4].trim(),
-      };
+        const country = {
+          name: data[3].trim(),
+          regionName: data[4].trim(),
+        };
 
-      const city = {
-        name: data[2].trim(),
-        C40Status: data[6].trim() == "C40" ? true : false,
-        population: {
-          count: parseInt(data[17]) || null,
-          year: parseInt(data[18]) || null,
-        },
-      };
+        const city = {
+          name: data[2].trim(),
+          C40Status: data[6].trim() == "C40" ? true : false,
+          population: {
+            count: parseInt(data[17]) || null,
+            year: parseInt(data[18]) || null,
+          },
+        };
 
-      const targetType = {
-        type: data[8].trim(),
-      };
+        const targetType = {
+          type: data[8].trim(),
+        };
 
-      const target = {
-        reportingYear: isNaN(parseInt(data[7])) ? null : parseInt(data[7]),
-        baselineYear: isNaN(parseInt(data[9])) ? null : parseInt(data[9]),
-        baselineEmissionsCO2: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
-        reductionTargetPercentage: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
-        targetYear: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
-        comment: data[16].trim(),
-        sector: data[9].trim(),
-      };
+        const target = {
+          reportingYear: isNaN(parseInt(data[7])) ? null : parseInt(data[7]),
+          baselineYear: isNaN(parseInt(data[9])) ? null : parseInt(data[9]),
+          baselineEmissionsCO2: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
+          reductionTargetPercentage: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
+          targetYear: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
+          comment: data[16].trim(),
+          sector: data[9].trim(),
+        };
 
-      obj.organisation = organisation;
-      obj.country = country;
-      obj.city = city;
-      obj.targetType = targetType;
-      obj.target = target;
+        obj.organisation = organisation;
+        obj.country = country;
+        obj.city = city;
+        obj.targetType = targetType;
+        obj.target = target;
 
-      records.push(obj);
-    })
-    .on("end", async () => {
-      console.log("Read all records in csv", path, "(Rows:", records.length, ")");
-      console.log("Inserting records into database...");
+        records.push(obj);
+      })
+      .on("end", async () => {
+        console.log("Read all records in csv", path, "(Rows:", records.length, ")");
+        console.log("Inserting records into database...");
 
-      const con = await sql.connect(mssqlConfig);
+        const con = await sql.connect(mssqlConfig);
 
-      try {
-        for (const record of records) {
-          // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
+        try {
+          for (const record of records) {
+            // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
 
-          const newCountry = await con.query`
+            const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
           BEGIN
               INSERT INTO Countries (name, regionName)
@@ -84,7 +85,7 @@ const scraper2 = async () => {
           END
           `;
 
-          const newCity = await con.query`
+            const newCity = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Cities WHERE name = ${record.city.name})
           BEGIN
               DECLARE @country_id uniqueidentifier;
@@ -99,7 +100,7 @@ const scraper2 = async () => {
           END
           `;
 
-          const newPopulation = await con.query`
+            const newPopulation = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Populations WHERE cityID = (SELECT id FROM Cities WHERE name = ${record.city.name}))
           BEGIN
               DECLARE @city_id uniqueidentifier;
@@ -114,8 +115,8 @@ const scraper2 = async () => {
           END
           `;
 
-          // create organisation
-          const newOrganisation = await con.query`
+            // create organisation
+            const newOrganisation = await con.query`
               IF NOT EXISTS (SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo})
               BEGIN
                   DECLARE @city_id uniqueidentifier;
@@ -132,7 +133,7 @@ const scraper2 = async () => {
               END
               `;
 
-          const newSector = await con.query`
+            const newSector = await con.query`
               IF NOT EXISTS (SELECT 1 FROM Sectors WHERE name = ${record.target.sector})
               BEGIN
                   INSERT INTO Sectors (name)
@@ -140,7 +141,7 @@ const scraper2 = async () => {
               END
           `;
 
-          const newTargetType = await con.query`
+            const newTargetType = await con.query`
               IF NOT EXISTS (SELECT 1 FROM TargetTypes WHERE type = ${record.targetType.type})
               BEGIN
                   INSERT INTO TargetTypes (type)
@@ -148,8 +149,8 @@ const scraper2 = async () => {
               END
           `;
 
-          // create target
-          const newTarget = await con.query`
+            // create target
+            const newTarget = await con.query`
             BEGIN
                 DECLARE @organisation_id uniqueidentifier;
                 DECLARE @sector_id uniqueidentifier;
@@ -166,13 +167,15 @@ const scraper2 = async () => {
                 END
             END
             `;
-        }
+          }
 
-        console.log("Records inserted into database");
-      } catch (error) {
-        console.log(error);
-      }
-    });
+          console.log("Scraper 2 done!");
+          resolve("Scraper 2 done!");
+        } catch (error) {
+          reject(error);
+        }
+      });
+  });
 };
 
 export default scraper2;

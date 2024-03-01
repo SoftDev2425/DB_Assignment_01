@@ -79,3 +79,11 @@ CREATE TABLE GHG_Emissions (
 	FOREIGN KEY (organisationID) REFERENCES Organisations(id),
 	FOREIGN KEY (emissionStatusTypeID) REFERENCES EmissionStatusTypes(id)
 )
+
+CREATE TABLE Questionnaires (
+	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
+	organisationID uniqueidentifier,
+	name varchar(250),
+	data varchar(MAX),
+	FOREIGN KEY (organisationID) REFERENCES Organisations(id)
+)

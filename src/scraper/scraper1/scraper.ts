@@ -4,62 +4,63 @@ import { mssqlConfig } from "../../utils/db/dbConnection";
 import sql from "mssql";
 
 const scraper1 = async () => {
-  const path = "./data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
+  return new Promise((resolve, reject) => {
+    const path = "./data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
 
-  const records: any[] = [];
+    const records: any[] = [];
 
-  const parser = parse({
-    delimiter: ",",
-    from_line: 2,
-  });
+    const parser = parse({
+      delimiter: ",",
+      from_line: 2,
+    });
 
-  fs.createReadStream(path)
-    .pipe(parser)
-    .on("data", (data) => {
-      const obj: any = {};
+    fs.createReadStream(path)
+      .pipe(parser)
+      .on("data", (data) => {
+        const obj: any = {};
 
-      const organisation = {
-        name: data[0].trim(),
-        accountNo: parseInt(data[1]) || null,
-      };
+        const organisation = {
+          name: data[0].trim(),
+          accountNo: parseInt(data[1]) || null,
+        };
 
-      const country = {
-        name: data[2].trim(),
-      };
+        const country = {
+          name: data[2].trim(),
+        };
 
-      const city = {
-        name: data[3].trim(),
-        C40Status: data[4].trim() == "C40" ? true : false,
-      };
+        const city = {
+          name: data[3].trim(),
+          C40Status: data[4].trim() == "C40" ? true : false,
+        };
 
-      const target = {
-        reportingYear: isNaN(parseInt(data[5])) ? null : parseInt(data[5]),
-        baselineYear: isNaN(parseInt(data[8])) ? null : parseInt(data[8]),
-        baselineEmissionsCO2: isNaN(parseInt(data[9])) ? null : parseInt(data[9]),
-        reductionTargetPercentage: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
-        targetYear: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
-        comment: data[12].trim(),
-        sector: data[6].trim(),
-      };
+        const target = {
+          reportingYear: isNaN(parseInt(data[5])) ? null : parseInt(data[5]),
+          baselineYear: isNaN(parseInt(data[8])) ? null : parseInt(data[8]),
+          baselineEmissionsCO2: isNaN(parseInt(data[9])) ? null : parseInt(data[9]),
+          reductionTargetPercentage: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
+          targetYear: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
+          comment: data[12].trim(),
+          sector: data[6].trim(),
+        };
 
-      obj.organisation = organisation;
-      obj.country = country;
-      obj.city = city;
-      obj.target = target;
+        obj.organisation = organisation;
+        obj.country = country;
+        obj.city = city;
+        obj.target = target;
 
-      records.push(obj);
-    })
-    .on("end", async () => {
-      console.log("Read all records in csv", path, "(Rows:", records.length, ")");
-      console.log("Inserting records into database...");
+        records.push(obj);
+      })
+      .on("end", async () => {
+        console.log("Read all records in csv", path, "(Rows:", records.length, ")");
+        console.log("Inserting records into database...");
 
-      const con = await sql.connect(mssqlConfig);
+        const con = await sql.connect(mssqlConfig);
 
-      try {
-        for (const record of records) {
-          // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
+        try {
+          for (const record of records) {
+            // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
 
-          const newCountry = await con.query`
+            const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
           BEGIN
               INSERT INTO Countries (name)
@@ -67,7 +68,7 @@ const scraper1 = async () => {
           END
           `;
 
-          const newCity = await con.query`
+            const newCity = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Cities WHERE name = ${record.city.name})
           BEGIN
               DECLARE @country_id uniqueidentifier;
@@ -82,8 +83,8 @@ const scraper1 = async () => {
           END
           `;
 
-          // create organisation
-          const newOrganisation = await con.query`
+            // create organisation
+            const newOrganisation = await con.query`
               IF NOT EXISTS (SELECT 1 FROM Organisations WHERE accountNo = ${record.organisation.accountNo})
               BEGIN
                   DECLARE @city_id uniqueidentifier;
@@ -100,7 +101,7 @@ const scraper1 = async () => {
               END
               `;
 
-          const newSector = await con.query`
+            const newSector = await con.query`
               IF NOT EXISTS (SELECT 1 FROM Sectors WHERE name = ${record.target.sector})
               BEGIN
                   INSERT INTO Sectors (name)
@@ -108,8 +109,8 @@ const scraper1 = async () => {
               END
           `;
 
-          // create target
-          const newTarget = await con.query`
+            // create target
+            const newTarget = await con.query`
             BEGIN
                 DECLARE @organisation_id uniqueidentifier;
                 DECLARE @sector_id uniqueidentifier;
@@ -124,13 +125,15 @@ const scraper1 = async () => {
                 END
             END
             `;
-        }
+          }
 
-        console.log("Records inserted into database");
-      } catch (error) {
-        console.log(error);
-      }
-    });
+          console.log("Scraper 1 done!");
+          resolve("Scraper 1 done!");
+        } catch (error) {
+          reject(error);
+        }
+      });
+  });
 };
 
 export default scraper1;
