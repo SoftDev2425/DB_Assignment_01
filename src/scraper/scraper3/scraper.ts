@@ -2,7 +2,7 @@ import fs from "fs";
 import { parse } from "csv-parse";
 
 const scraper3 = async () => {
-  const path = "../data/2017_Cities_Community_Wide_Emissions.csv";
+  const path = "./data/2017_Cities_Community_Wide_Emissions.csv";
 
   const records: any[] = [];
 

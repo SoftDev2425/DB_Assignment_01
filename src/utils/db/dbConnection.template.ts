@@ -2,7 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // This is a template file for the database connection configuration.
-// Replace the values with your own database configuration and rename the file to dbConnection.ts
+// 1) Change the name to dbConnection.ts.
+// 2) Replace the values with your own database configuration
 
 export const mssqlConfig = {
   database: "YOUR_DATABASE_NAME",

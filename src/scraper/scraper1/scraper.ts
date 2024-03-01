@@ -55,8 +55,10 @@ const scraper1 = async () => {
       const con = await sql.connect(mssqlConfig);
 
       try {
-        for (const record of records) {
+        for (let i = 1; i < records.length; i++) {
           // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
+
+          const record = records[i];
 
           const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
@@ -130,7 +132,6 @@ const scraper1 = async () => {
         console.log(error);
       }
 
-      await con.close();
     });
 };
 
