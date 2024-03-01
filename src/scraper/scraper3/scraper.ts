@@ -2,6 +2,7 @@ import fs from "fs";
 import { parse } from "csv-parse";
 import { mssqlConfig } from "../../utils/db/dbConnection";
 import sql from "mssql";
+import { format } from "date-fns";
 
 const scraper3 = async () => {
   const path = "./data/2016_Citywide_GHG_Emissions_20240207.csv";
@@ -10,6 +11,7 @@ const scraper3 = async () => {
 
   const parser = parse({
     delimiter: ",",
+    from_line: 2,
   });
 
   fs.createReadStream(path)
@@ -18,17 +20,17 @@ const scraper3 = async () => {
       const obj: any = {};
 
       const organisation = {
-        name: data[1],
+        name: data[1].trim(),
         accountNo: parseInt(data[0]) || null,
       };
 
       const country = {
-        name: data[2],
+        name: data[2].trim(),
       };
 
       const city = {
-        name: data[3],
-        C40Status: data[4] == "C40" ? true : false,
+        name: data[3].trim(),
+        C40Status: data[4].trim() == "C40" ? true : false,
         population: {
           count: parseInt(data[17]) || null,
           year: parseInt(data[16]) || null,
@@ -36,17 +38,19 @@ const scraper3 = async () => {
       };
 
       const emissionStatusTypes = {
-        type: data[14] || "",
+        type: data[14].trim() || "",
       };
 
       const GHG_emissions = {
-        reportingYear: isNaN(parseInt(data[7])) ? null : parseInt(data[7]),
-        measurementYear: isNaN(parseInt(data[9])) ? null : parseInt(data[9]),
-        boundary: data[7] || "",
-        methodology: data[8] || "",
-        methodologyDetails: data[9] || "",
-        description: data[15] || "",
-        gassesIncluded: data[10] || "",
+        reportingYear: isNaN(parseInt(data[5])) ? null : parseInt(data[5]),
+        measurementYear: isNaN(parseInt(format(new Date(data[6]), "yyyy")))
+          ? null
+          : parseInt(format(new Date(data[6]), "yyyy")),
+        boundary: data[7].trim() || "",
+        methodology: data[8].trim() || "",
+        methodologyDetails: data[9].trim() || "",
+        description: data[15].trim() || "",
+        gassesIncluded: data[10].trim() || "",
         totalCityWideEmissionsCO2: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
         totalScope1CO2: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
         totalScope2CO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
@@ -67,10 +71,8 @@ const scraper3 = async () => {
       const con = await sql.connect(mssqlConfig);
 
       try {
-        for (let i = 1; i < records.length; i++) {
+        for (const record of records) {
           // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
-
-          const record = records[i];
 
           const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})
@@ -155,8 +157,6 @@ const scraper3 = async () => {
         }
 
         console.log("Records inserted into database");
-
-        await con.close();
       } catch (error) {
         console.log(error);
       }

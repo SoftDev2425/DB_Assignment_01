@@ -10,6 +10,7 @@ const scraper2 = async () => {
 
   const parser = parse({
     delimiter: ",",
+    from_line: 2,
   });
 
   fs.createReadStream(path)
@@ -18,18 +19,18 @@ const scraper2 = async () => {
       const obj: any = {};
 
       const organisation = {
-        name: data[1],
+        name: data[1].trim(),
         accountNo: parseInt(data[0]) || null,
       };
 
       const country = {
-        name: data[3],
-        regionName: data[4],
+        name: data[3].trim(),
+        regionName: data[4].trim(),
       };
 
       const city = {
-        name: data[2],
-        C40Status: data[6] == "C40" ? true : false,
+        name: data[2].trim(),
+        C40Status: data[6].trim() == "C40" ? true : false,
         population: {
           count: parseInt(data[17]) || null,
           year: parseInt(data[18]) || null,
@@ -37,7 +38,7 @@ const scraper2 = async () => {
       };
 
       const targetType = {
-        type: data[8],
+        type: data[8].trim(),
       };
 
       const target = {
@@ -46,8 +47,8 @@ const scraper2 = async () => {
         baselineEmissionsCO2: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
         reductionTargetPercentage: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
         targetYear: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
-        comment: data[16],
-        sector: data[9],
+        comment: data[16].trim(),
+        sector: data[9].trim(),
       };
 
       obj.organisation = organisation;
@@ -65,10 +66,8 @@ const scraper2 = async () => {
       const con = await sql.connect(mssqlConfig);
 
       try {
-        for (let i = 1; i < records.length; i++) {
+        for (const record of records) {
           // NOTE: We are well aware that the transactions below can be done in a single transaction - we separated them for clarity
-
-          const record = records[i];
 
           const newCountry = await con.query`
           IF NOT EXISTS (SELECT 1 FROM Countries WHERE name = ${record.country.name})

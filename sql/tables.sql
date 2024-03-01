@@ -58,7 +58,7 @@ CREATE TABLE Targets (
 
 CREATE TABLE EmissionStatusTypes (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
-	type varchar(75)
+	type varchar(300)
 )
 
 CREATE TABLE GHG_Emissions (
@@ -69,6 +69,7 @@ CREATE TABLE GHG_Emissions (
 	methodology varchar(250),
 	methodologyDetails varchar(MAX),
 	description varchar(MAX),
+	comment varchar(2000),
 	gassesIncluded varchar(100),
 	totalCityWideEmissionsCO2 FLOAT,
 	totalScope1_CO2 FLOAT,
