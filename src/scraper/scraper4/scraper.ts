@@ -4,7 +4,7 @@ import { mssqlConfig } from "../../utils/db/dbConnection";
 import sql from "mssql";
 import { format } from "date-fns";
 
-const scraper4 = async () => {
+const scraper4 = async (con: any) => {
   return new Promise((resolve, reject) => {
     const path = "./data/2017_Cities_Community_Wide_Emissions.csv";
 
@@ -69,10 +69,8 @@ const scraper4 = async () => {
         records.push(obj);
       })
       .on("end", async () => {
-        console.log("Read all records in csv", path, "(Rows:", records.length, ")");
+        console.log("Read all records in csv", path, "// Rows:", records.length);
         console.log("Inserting records into database...");
-
-        const con = await sql.connect(mssqlConfig);
 
         try {
           for (const record of records) {
