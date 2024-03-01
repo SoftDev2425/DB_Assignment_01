@@ -170,8 +170,6 @@ const scraper2 = async () => {
         }
 
         console.log("Records inserted into database");
-        
-        await con.close();
       } catch (error) {
         console.log(error);
       }

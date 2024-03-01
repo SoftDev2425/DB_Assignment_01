@@ -32,7 +32,7 @@ CREATE TABLE Organisations (
 
 CREATE TABLE Sectors (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
-	name varchar(75)
+	name varchar(300)
 )
 
 CREATE TABLE TargetTypes (
@@ -43,10 +43,10 @@ CREATE TABLE TargetTypes (
 CREATE TABLE Targets (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
 	reportingYear int,
-	baslineYear int,
+	baselineYear int,
 	targetYear int,
 	reductionTargetPercentage int,
-	baselineEmissionsCO2 int,
+	baselineEmissionsCO2 bigint,
 	comment varchar(MAX),
 	organisationID uniqueidentifier,
 	sectorID uniqueidentifier,
