@@ -1,19 +1,7 @@
 import { mssqlConfig } from "../utils/db/dbConnection";
 import sql from "mssql";
 
-export const tester = async () => {
-  try {
-    console.log("REACHED");
-    await sql.connect(mssqlConfig);
-    const result = await sql.query`SELECT * FROM Accounts;`;
-    console.log(result.recordset[0]);
-    return result.recordset;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
-};
-
+// 1
 export const getTotalEmissionsByCity = async (city: string) => {
   try {
     await sql.connect(mssqlConfig);
@@ -22,20 +10,74 @@ export const getTotalEmissionsByCity = async (city: string) => {
   } catch (error) {
     console.error("Error:", error);
     throw error;
-  }  
+  }
 };
 
-export const getContriesMostProminentGasses = async () => {
+// 2
+export const getCitiesByStatusType = async (statusType: string) => {
   try {
     await sql.connect(mssqlConfig);
-    const result = await sql.query`EXEC GetGassesByCountry;`;
+    const result = await sql.query`EXEC GetCitiesByStatusType @EmissionStatus = ${statusType};`;
     return result.recordset;
   } catch (error) {
     console.error("Error:", error);
     throw error;
-  }  
+  }
 };
 
+// 3
+export const GetAvgEmissionForC40AndNonC40 = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetAvgEmissionForC40AndNonC40;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// 4
+export const getCityEmissionTargets = async (city: string) => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetEmissionTargetsForCity @CityName = ${city};`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// 5
+export const getCitiesWithEmissionsRanking = async (statusType = "asc") => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetCitiesWithEmissionsRanking`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// 6
+
+// 7
+
+// 8
+export const getTotalEmissionsForRegions = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetTotalEmissionsForRegions;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
+
+// 9
 export const getTotalEmissionsForCountries = async () => {
   try {
     await sql.connect(mssqlConfig);
@@ -46,3 +88,19 @@ export const getTotalEmissionsForCountries = async () => {
     throw error;
   }
 }
+
+
+// 10
+export const getContriesMostProminentGasses = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetGassesByCountry;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+
+
