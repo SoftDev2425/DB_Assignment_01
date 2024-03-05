@@ -78,6 +78,17 @@ export const getTotalEmissionsForRegions = async () => {
 }
 
 // 9
+export const getTotalEmissionsForCountries = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetTotalEmissionsForCountries;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
+
 
 // 10
 export const getContriesMostProminentGasses = async () => {
@@ -90,5 +101,6 @@ export const getContriesMostProminentGasses = async () => {
     throw error;
   }
 };
+
 
 

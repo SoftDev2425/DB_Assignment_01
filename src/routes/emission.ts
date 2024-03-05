@@ -7,6 +7,7 @@ import {
   getContriesMostProminentGasses,
   getTotalEmissionsByCity,
   getTotalEmissionsForRegions,
+  getTotalEmissionsForCountries
 } from "../services/emissions.service";
 
 interface Params {
@@ -169,7 +170,20 @@ export async function emissionRoutes(fastify: FastifyInstance) {
    });
   
   // 9
-
+  fastify.get('/countries', async function (request, reply: FastifyReply) {
+    try {
+      const data = await getTotalEmissionsForCountries();
+      return { countries: data.map((d) => ({        
+        id: d.CountryID,
+        name: d.CountryName,
+        totalEmission: d.TotalEmissions.toLocaleString()
+      }))}
+    } catch (error) {
+      fastify.log.error(error);
+      reply.code(500).send({ error: "Failed getting all countries' total emissions. Please try again later." });
+    }
+  })
+  
   // 10
   fastify.get("/countries/gas", async function (request, reply: FastifyReply) {
     try {
