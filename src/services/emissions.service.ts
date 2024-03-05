@@ -22,5 +22,16 @@ export const getTotalEmissionsByCity = async (city: string) => {
   } catch (error) {
     console.error("Error:", error);
     throw error;
-  }
+  }  
+};
+
+export const getContriesMostProminentGasses = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetGassesByCountry;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }  
 };
