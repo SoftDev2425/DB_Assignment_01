@@ -1,9 +1,3 @@
-IF OBJECT_ID('GetCitiesWithEmissionsRanking', 'P') IS NOT NULL
-BEGIN
-    DROP PROCEDURE GetCitiesWithEmissionsRanking;
-END
-GO
-
 CREATE PROCEDURE GetCitiesWithEmissionsRanking
 AS
 BEGIN

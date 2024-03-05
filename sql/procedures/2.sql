@@ -1,10 +1,4 @@
-IF OBJECT_ID('GetCityByStatus', 'P') IS NOT NULL
-BEGIN
-    DROP PROCEDURE GetCityByStatus;
-END
-GO
-
-CREATE PROCEDURE GetCityByStatus
+CREATE PROCEDURE GetCitiesByStatusType
     @EmissionStatus VARCHAR(100)
 AS
 BEGIN
@@ -19,6 +13,7 @@ BEGIN
         (SELECT TOP 1 p.count FROM Populations p WHERE p.cityID = c.id ORDER BY p.year DESC) AS Population,
 
         SUM(e.totalCityWideEmissionsCO2) AS TotalCityWideEmissionsCO2,
+        e.id as emissionID,
         SUM(e.totalScope1_CO2) AS TotalScope1_CO2,
         SUM(e.totalScope2_CO2) AS TotalScope2_CO2,
         est.type AS EmissionStatus,
@@ -31,6 +26,6 @@ BEGIN
     JOIN GHG_Emissions e ON o.id = e.organisationID
     JOIN EmissionStatusTypes est ON e.emissionStatusTypeID = est.id
     WHERE est.type = @EmissionStatus AND e.reportingYear = @MostRecentYear
-    GROUP BY c.id, c.name, c.c40Status, est.type
+    GROUP BY c.id, c.name, e.id, c.c40Status, est.type
     ORDER BY c.name;
 END;
