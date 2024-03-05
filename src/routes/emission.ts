@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   GetAvgEmissionForC40AndNonC40,
+  getCityEmissionTargets,
   getContriesMostProminentGasses,
   getTotalEmissionsByCity,
 } from "../services/emissions.service";
-import { log } from "console";
 
 interface Params {
   cityName: string;
@@ -21,16 +21,40 @@ export async function emissionRoutes(fastify: FastifyInstance) {
     }
   });
 
-  // fastify.get("/:id", async function (request: FastifyRequest<{ Params: Params }>, reply: FastifyReply) {
-  //   try {
-  //     const id = request.params.id;
-  //     //   return await getUserById(id);
-  //     return { message: `hello from emission by id ${id}` };
-  //   } catch (error: any) {
-  //     fastify.log.error(error);
-  //     reply.code(500).send({ error: error.message });
-  //   }
-  // });
+  fastify.get("/targets/:cityName", async function (request: FastifyRequest<{ Params: Params }>, reply: FastifyReply) {
+    try {
+      const city = request.params.cityName;
+      const data = await getCityEmissionTargets(city);
+      console.log(data);
+      return data.map((d) => {
+        return {
+          city: {
+            id: d.cityID,
+            name: d.cityName,
+            population: d.population,
+            c40Status: d.c40Status,
+          },
+          organisation: {
+            name: d.organisationName,
+            accountNo: d.organisationNo,
+          },
+          target: {
+            id: d.targetID,
+            sector: d.sectorName ? d.sectorName : "N/A",
+            reportingYear: d.reportingYear ? d.reportingYear : "N/A",
+            baselineYear: d.baselineYear ? d.baselineYear : "N/A",
+            targetYear: d.targetYear ? d.targetYear : "N/A",
+            reductionTargetPercentage: d.reductionTargetPercentage ? d.reductionTargetPercentage : "N/A",
+            baselineEmissionsCO2: d.baselineEmissionsCO2 ? d.baselineEmissionsCO2 : "N/A",
+            comment: d.comment ? d.comment : "No comment",
+          },
+        };
+      });
+    } catch (error: any) {
+      fastify.log.error(error);
+      reply.code(500).send({ error: error.message });
+    }
+  });
 
   fastify.get("/total/:cityName", async function (request: FastifyRequest<{ Params: Params }>, reply: FastifyReply) {
     try {
@@ -46,26 +70,25 @@ export async function emissionRoutes(fastify: FastifyInstance) {
             id: d.cityID,
             name: d.cityName,
             population: d.population,
-            populationYear: d.cityPopulationYear,
-            c40Status: d.city_c40Status,
-            organisation: {
-              name: d.organisationName,
-              accountNo: d.organisationNo,
-            },
-            emission: {
-              id: d.emissionID,
-              reportingYear: d.reportingYear,
-              measurementYear: d.measurementYear,
-              total: d.total,
-              totalScope1Emission: d.totalScope1Emission ? d.totalScope1Emission : "N/A",
-              totalScope2Emission: d.totalScope2Emission ? d.totalScope2Emission : "N/A",
-              gassesIncluded: d.gassesIncluded,
-              methodology: d.methodology,
-              methodologyDetails: d.methodologyDetails,
-              change: d.type,
-              description: d.description,
-              comment: d.comment ? d.comment : "No comment",
-            },
+            c40Status: d.c40Status,
+          },
+          organisation: {
+            name: d.organisationName,
+            accountNo: d.organisationNo,
+          },
+          emission: {
+            id: d.emissionID,
+            reportingYear: d.reportingYear ? d.reportingYear : "N/A",
+            measurementYear: d.measurementYear ? d.measurementYear : "N/A",
+            total: d.total ? d.total : "N/A",
+            totalScope1Emission: d.totalScope1Emission ? d.totalScope1Emission : "N/A",
+            totalScope2Emission: d.totalScope2Emission ? d.totalScope2Emission : "N/A",
+            gassesIncluded: d.gassesIncluded ? d.gassesIncluded : "N/A",
+            methodology: d.methodology ? d.methodology : "N/A",
+            methodologyDetails: d.methodologyDetails ? d.methodologyDetails : "N/A",
+            change: d.type ? d.type : "N/A",
+            description: d.description ? d.description : "N/A",
+            comment: d.comment ? d.comment : "No comment",
           },
         };
       });
