@@ -71,19 +71,25 @@ export async function emissionRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get('/countries/gas', async function (request, reply: FastifyReply) {
+  fastify.get("/countries/gas", async function (request, reply: FastifyReply) {
     try {
       const data = await getContriesMostProminentGasses();
       console.log(data);
       return data.map((d) => {
         return {
           countryName: d.CountryName,
-          gasses: Array.from(new Set(d.Gasses.trim().split(";").map((g:string) => g.trim()))).join("; ")
-        }
-      })
+          gasses: Array.from(
+            new Set(
+              d.Gasses.trim()
+                .split(/[;\s]+/)
+                .map((g: string) => g.trim())
+            )
+          ).join("; "),
+        };
+      });
     } catch (error) {
       fastify.log.error(error);
       reply.code(500).send({ error: "Failed getting prominent gasses. Please try again later." });
     }
-  })
+  });
 }
