@@ -45,8 +45,12 @@ const scraper2 = async (con: any) => {
         const target = {
           reportingYear: isNaN(parseInt(data[7])) ? null : parseInt(data[7]),
           baselineYear: isNaN(parseInt(data[9])) ? null : parseInt(data[9]),
-          baselineEmissionsCO2: isNaN(parseInt(data[10])) ? null : parseInt(data[10]),
-          reductionTargetPercentage: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
+          baselineEmissionsCO2: isNaN(parseInt(data[10]))
+            ? null
+            : parseInt(data[10]),
+          reductionTargetPercentage: isNaN(parseInt(data[12]))
+            ? null
+            : parseInt(data[12]),
           targetYear: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
           comment: data[16].trim(),
           sector: data[9].trim(),
@@ -61,7 +65,12 @@ const scraper2 = async (con: any) => {
         records.push(obj);
       })
       .on("end", async () => {
-        console.log("Read all records in csv", path, "// Rows:", records.length);
+        console.log(
+          "Read all records in csv",
+          path,
+          "// Rows:",
+          records.length
+        );
         console.log("Inserting records into database...");
 
         try {
@@ -88,12 +97,16 @@ const scraper2 = async (con: any) => {
           BEGIN
               DECLARE @country_id uniqueidentifier;
 
-              SELECT @country_id = id FROM Countries WHERE name = ${record.country.name};
+              SELECT @country_id = id FROM Countries WHERE name = ${
+                record.country.name
+              };
 
               IF @country_id IS NOT NULL
               BEGIN
                 INSERT INTO Cities (name, C40Status, countryID)
-                VALUES (${record.city.name}, ${record.city.C40Status == true ? 1 : 0}, @country_id)
+                VALUES (${record.city.name}, ${
+              record.city.C40Status == true ? 1 : 0
+            }, @country_id)
               END
           END
           `;

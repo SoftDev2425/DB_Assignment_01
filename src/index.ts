@@ -3,7 +3,7 @@ import { buildServer } from "./server";
 async function startServer() {
   const server = await buildServer();
 
-  server.listen({ port: 3000, host: "0.0.0.0" }, function (err, address) {
+  server.listen({ port: 3000, host: "localhost" }, function (err, address) {
     if (err) {
       server.log.error(err);
       process.exit(1);
