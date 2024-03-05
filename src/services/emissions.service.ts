@@ -46,3 +46,14 @@ export const GetAvgEmissionForC40AndNonC40 = async () => {
     throw error;
   }
 };
+
+export const getCityEmissionTargets = async (city: string) => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetEmissionTargetsForCity @CityName = ${city};`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
