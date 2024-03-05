@@ -1,5 +1,9 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { getContriesMostProminentGasses, getTotalEmissionsByCity, tester } from "../services/emissions.service";
+import {
+  GetAvgEmissionForC40AndNonC40,
+  getContriesMostProminentGasses,
+  getTotalEmissionsByCity,
+} from "../services/emissions.service";
 import { log } from "console";
 
 interface Params {
@@ -7,15 +11,15 @@ interface Params {
 }
 
 export async function emissionRoutes(fastify: FastifyInstance) {
-  // fastify.get("/", async function (request: FastifyRequest, reply: FastifyReply) {
-  //   try {
-  //     const emissions = await tester();
-  //     return { emissions };
-  //   } catch (error) {
-  //     fastify.log.error(error);
-  //     reply.code(500).send({ error: "Failed getting emissions. Please try again later." });
-  //   }
-  // });
+  fastify.get("/avg", async function (request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const emissions = await GetAvgEmissionForC40AndNonC40();
+      return { emissions };
+    } catch (error) {
+      fastify.log.error(error);
+      reply.code(500).send({ error: "Failed getting emissions. Please try again later." });
+    }
+  });
 
   // fastify.get("/:id", async function (request: FastifyRequest<{ Params: Params }>, reply: FastifyReply) {
   //   try {
