@@ -66,6 +66,16 @@ export const getCitiesWithEmissionsRanking = async (statusType = "asc") => {
 // 7
 
 // 8
+export const getTotalEmissionsForRegions = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetTotalEmissionsForRegions;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
 
 // 9
 
@@ -80,4 +90,5 @@ export const getContriesMostProminentGasses = async () => {
     throw error;
   }
 };
+
 
