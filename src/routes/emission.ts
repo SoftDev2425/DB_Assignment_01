@@ -95,7 +95,7 @@ export async function emissionRoutes(fastify: FastifyInstance) {
   fastify.get("/avg", async function (request: FastifyRequest, reply: FastifyReply) {
     try {
       const emissions = await GetAvgEmissionForC40AndNonC40();
-      return { emissions };
+      return emissions;
     } catch (error: any) {
       fastify.log.error(error);
       reply.code(500).send({ error: "Failed getting emissions. Please try again later." });

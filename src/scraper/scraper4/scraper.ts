@@ -6,7 +6,7 @@ import { format } from "date-fns";
 
 const scraper4 = async (con: any) => {
   return new Promise((resolve, reject) => {
-    const path = "./data/2017_Cities_Community_Wide_Emissions.csv";
+    const path = "src/scraper/data/2017_Cities_Community_Wide_Emissions.csv";
 
     const records: any[] = [];
 
@@ -47,9 +47,7 @@ const scraper4 = async (con: any) => {
           reportingYear: isNaN(parseInt(data[7])) ? null : parseInt(data[7]),
           measurementYear: data[8]
             .split(" - ")
-            .map((date: string | number | Date) =>
-              format(new Date(date), "yyyy-MM-dd")
-            )[1]
+            .map((date: string | number | Date) => format(new Date(date), "yyyy-MM-dd"))[1]
             .split("-")[0],
           boundary: data[9].trim() || "",
           methodology: data[10].trim() || "",
@@ -57,9 +55,7 @@ const scraper4 = async (con: any) => {
           description: data[19].trim() || "",
           comment: data[17].trim() || "",
           gassesIncluded: data[12].trim() || "",
-          totalCityWideEmissionsCO2: isNaN(parseInt(data[13]))
-            ? null
-            : parseInt(data[13]),
+          totalCityWideEmissionsCO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
           totalScope1CO2: isNaN(parseInt(data[14])) ? null : parseInt(data[14]),
           totalScope2CO2: isNaN(parseInt(data[15])) ? null : parseInt(data[15]),
         };
@@ -73,12 +69,7 @@ const scraper4 = async (con: any) => {
         records.push(obj);
       })
       .on("end", async () => {
-        console.log(
-          "Read all records in csv",
-          path,
-          "// Rows:",
-          records.length
-        );
+        console.log("Read all records in csv", path, "// Rows:", records.length);
         console.log("Inserting records into database...");
 
         try {
@@ -98,16 +89,12 @@ const scraper4 = async (con: any) => {
           BEGIN
               DECLARE @country_id uniqueidentifier;
 
-              SELECT @country_id = id FROM Countries WHERE name = ${
-                record.country.name
-              };
+              SELECT @country_id = id FROM Countries WHERE name = ${record.country.name};
 
               IF @country_id IS NOT NULL
               BEGIN
                 INSERT INTO Cities (name, C40Status, countryID)
-                VALUES (${record.city.name}, ${
-              record.city.C40Status == true ? 1 : 0
-            }, @country_id)
+                VALUES (${record.city.name}, ${record.city.C40Status == true ? 1 : 0}, @country_id)
               END
           END
           `;

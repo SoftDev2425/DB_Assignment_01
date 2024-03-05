@@ -10,9 +10,11 @@ import scraper3 from "./scraper3/scraper";
 import scraper4 from "./scraper4/scraper";
 import scraper5 from "./scraper5/scraper";
 
-const scrapeAndInsertIntoDatabase = async () => {
+export const scrapeAndInsertIntoDatabase = async (con?: any) => {
   try {
-    const con = await sql.connect(mssqlConfig);
+    if (!con) {
+      con = await sql.connect(mssqlConfig);
+    }
 
     await scraper1(con);
     await scraper2(con);

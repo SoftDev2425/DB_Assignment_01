@@ -1,7 +1,7 @@
 CREATE TABLE Countries (
 	id uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
-	name varchar(60),
-	regionName varchar(60)
+	name varchar(200),
+	regionName varchar(200)
 )
 
 CREATE TABLE Cities (

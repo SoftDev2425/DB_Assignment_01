@@ -3,7 +3,7 @@ import { parse } from "csv-parse";
 
 const scraper1 = async (con: any) => {
   return new Promise((resolve, reject) => {
-    const path = "./data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
+    const path = "src/scraper/data/2016_Cities_Emissions_Reduction_Targets_20240207.csv";
 
     const records: any[] = [];
 
