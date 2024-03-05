@@ -156,19 +156,21 @@ export async function emissionRoutes(fastify: FastifyInstance) {
   // TODO: NEEDS TO BE FIXED - ADD GHG_EMISSION DATA
 
   // 8
-  fastify.get('/regions', async function (request, reply: FastifyReply) {
+  fastify.get("/regions", async function (request, reply: FastifyReply) {
     try {
       const data = await getTotalEmissionsForRegions();
-      return {regions: data.map((d) => ({
-        name: d.RegionName,
-        totalEmission: d.TotalEmissions.toLocaleString()
-      }))}
+      return {
+        regions: data.map((d) => ({
+          name: d.RegionName ? d.RegionName : "N/A",
+          totalEmission: d.TotalEmissions.toLocaleString() ? d.TotalEmissions.toLocaleString() : "N/A",
+        })),
+      };
     } catch (error) {
       fastify.log.error(error);
       reply.code(500).send({ error: "Failed getting regions' emissions. Please try again later." });
     }
-   });
-  
+  });
+
   // 9
   fastify.get('/countries', async function (request, reply: FastifyReply) {
     try {
@@ -204,6 +206,5 @@ export async function emissionRoutes(fastify: FastifyInstance) {
       fastify.log.error(error);
       reply.code(500).send({ error: "Failed getting prominent gasses. Please try again later." });
     }
-
-  })
+  });
 }
