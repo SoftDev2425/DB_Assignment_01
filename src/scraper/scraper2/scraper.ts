@@ -1,11 +1,9 @@
 import fs from "fs";
 import { parse } from "csv-parse";
-import { mssqlConfig } from "../../utils/db/dbConnection";
-import sql from "mssql";
 
 const scraper2 = async (con: any) => {
   return new Promise((resolve, reject) => {
-    const path = "src/scraper/data/2017_Cities_Emissions_Reduction_Targets_20240207.csv";
+    const path = "scraper/data/2017_Cities_Emissions_Reduction_Targets_20240207.csv";
 
     const records: any[] = [];
 
