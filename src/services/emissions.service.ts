@@ -22,7 +22,7 @@ export const getTotalEmissionsByCity = async (city: string) => {
   } catch (error) {
     console.error("Error:", error);
     throw error;
-  }  
+  }
 };
 
 export const getContriesMostProminentGasses = async () => {
@@ -33,5 +33,16 @@ export const getContriesMostProminentGasses = async () => {
   } catch (error) {
     console.error("Error:", error);
     throw error;
-  }  
+  }
+};
+
+export const GetAvgEmissionForC40AndNonC40 = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetAvgEmissionForC40AndNonC40;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
 };
