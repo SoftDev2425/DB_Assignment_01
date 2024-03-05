@@ -8,7 +8,6 @@ CREATE PROCEDURE GetCityByStatus
     @EmissionStatus VARCHAR(100)
 AS
 BEGIN
-    -- Determine the most recent reporting year across all emissions data
     DECLARE @MostRecentYear INT;
     SELECT @MostRecentYear = MAX(reportingYear) FROM GHG_Emissions;
 
