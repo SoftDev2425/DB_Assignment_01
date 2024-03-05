@@ -52,7 +52,9 @@ const scraper3 = async (con: any) => {
           methodologyDetails: data[9].trim() || "",
           description: data[15].trim() || "",
           gassesIncluded: data[10].trim() || "",
-          totalCityWideEmissionsCO2: isNaN(parseInt(data[11])) ? null : parseInt(data[11]),
+          totalCityWideEmissionsCO2: isNaN(parseInt(data[11]))
+            ? null
+            : parseInt(data[11]),
           totalScope1CO2: isNaN(parseInt(data[12])) ? null : parseInt(data[12]),
           totalScope2CO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
         };
@@ -66,7 +68,12 @@ const scraper3 = async (con: any) => {
         records.push(obj);
       })
       .on("end", async () => {
-        console.log("Read all records in csv", path, "// Rows:", records.length);
+        console.log(
+          "Read all records in csv",
+          path,
+          "// Rows:",
+          records.length
+        );
         console.log("Inserting records into database...");
 
         try {
@@ -86,12 +93,16 @@ const scraper3 = async (con: any) => {
           BEGIN
               DECLARE @country_id uniqueidentifier;
 
-              SELECT @country_id = id FROM Countries WHERE name = ${record.country.name};
+              SELECT @country_id = id FROM Countries WHERE name = ${
+                record.country.name
+              };
 
               IF @country_id IS NOT NULL
               BEGIN
                 INSERT INTO Cities (name, C40Status, countryID)
-                VALUES (${record.city.name}, ${record.city.C40Status == true ? 1 : 0}, @country_id)
+                VALUES (${record.city.name}, ${
+              record.city.C40Status == true ? 1 : 0
+            }, @country_id)
               END
           END
           `;
