@@ -1,3 +1,5 @@
+One exution for all that adds all tables + scrapes adds procedures
+
 # DB Assignment 1
 
 ## Table of content

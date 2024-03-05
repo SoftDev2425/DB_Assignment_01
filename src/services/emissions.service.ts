@@ -13,3 +13,14 @@ export const tester = async () => {
     throw error;
   }
 };
+
+export const getTotalEmissionsByCity = async (city: string) => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetTotalEmissionByCity @CityName = ${city};`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};

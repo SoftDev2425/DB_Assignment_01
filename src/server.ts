@@ -18,7 +18,7 @@ export async function buildServer() {
     return { msg: "Hello from DB assignment 1" };
   });
 
-  fastify.register(emissionRoutes, { prefix: "/api/emission" });
+  fastify.register(emissionRoutes, { prefix: "/api/emissions" });
 
   return fastify;
 }
