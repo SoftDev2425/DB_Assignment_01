@@ -22,5 +22,3 @@ BEGIN
     WHERE c40Status = @C40Status
     ORDER BY c.name;
 END;
-
-EXEC GetC40Cities @C40Status = 1;

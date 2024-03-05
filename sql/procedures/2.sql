@@ -34,5 +34,3 @@ BEGIN
     GROUP BY c.id, c.name, c.c40Status, est.type
     ORDER BY c.name;
 END;
-
-EXEC GetCityByStatus @EmissionStatus = 'Increased';

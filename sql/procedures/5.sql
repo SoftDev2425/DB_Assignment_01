@@ -29,5 +29,3 @@ BEGIN
     INNER JOIN EmissionStatusTypes est ON e.emissionStatusTypeID = est.id
     ORDER BY e.totalCityWideEmissionsCO2 DESC;
 END;
-
-EXEC GetCitiesWithEmissionsRanking;
