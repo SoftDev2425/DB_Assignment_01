@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { getTotalEmissionsByCity, tester } from "../services/emissions.service";
+import { getContriesMostProminentGasses, getTotalEmissionsByCity, tester } from "../services/emissions.service";
+import { log } from "console";
 
 interface Params {
   cityName: string;
@@ -69,4 +70,20 @@ export async function emissionRoutes(fastify: FastifyInstance) {
       reply.code(500).send({ error: "Failed getting total emissions. Please try again later." });
     }
   });
+
+  fastify.get('/countries/gas', async function (request, reply: FastifyReply) {
+    try {
+      const data = await getContriesMostProminentGasses();
+      console.log(data);
+      return data.map((d) => {
+        return {
+          countryName: d.CountryName,
+          gasses: Array.from(new Set(d.Gasses.trim().split(";").map((g:string) => g.trim()))).join("; ")
+        }
+      })
+    } catch (error) {
+      fastify.log.error(error);
+      reply.code(500).send({ error: "Failed getting prominent gasses. Please try again later." });
+    }
+  })
 }
