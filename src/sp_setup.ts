@@ -1,11 +1,8 @@
 import fs from "fs";
 import sql from "mssql";
 import { mssqlConfig } from "./utils/db/dbConnection";
-import { scrapeAndInsertIntoDatabase } from "./scraper";
 
-const setup = async () => {
-  var tableScript = fs.readFileSync("./sql/tables.sql").toString();
-
+const sp_setup = async () => {
   var sp1 = fs.readFileSync("./sql/procedures/1.sql").toString();
   var sp2 = fs.readFileSync("./sql/procedures/2.sql").toString();
   var sp3 = fs.readFileSync("./sql/procedures/3.sql").toString();
@@ -17,13 +14,9 @@ const setup = async () => {
   var sp9 = fs.readFileSync("./sql/procedures/9.sql").toString();
   var sp10 = fs.readFileSync("./sql/procedures/10.sql").toString();
 
-  // CREATE DB TABLES
   const con = await sql.connect(mssqlConfig);
 
-  await con.query(tableScript);
-
-  // CREATE DB STORED PROCEDURES
-  const promises = await Promise.all([
+  await Promise.all([
     con.query(sp1),
     con.query(sp2),
     con.query(sp3),
@@ -35,11 +28,7 @@ const setup = async () => {
     con.query(sp10),
   ]);
 
-  // ADD DATA TO DB
-  await scrapeAndInsertIntoDatabase();
-
-  // CLOSE CONNECTION
   await con.close();
 };
 
-setup();
+sp_setup();

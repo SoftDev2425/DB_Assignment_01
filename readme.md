@@ -28,9 +28,13 @@ Explain a lot here......
 
 ### Step 1: Clone the project
 
+```
+git clone https://github.com/SoftDev2425/DB_Assignment_01.git
+```
+
 ### Step 2: Install dependencies
 
-Run:
+Open the project in a terminal and run:
 
 ```
 npm install
@@ -38,24 +42,32 @@ npm install
 
 ### Step 3: Configure DB-connection
 
-Under `src/utils/db` change `dbConnection.template.ts` filename to `dbConnection.ts` and apply your own database configuration. (we are well aware that .env is a better solution, but they can't be loaded when running ts-node in the upcoming way)
-The following values will suffice:
-
-- **database**
-- **user**
-- **password**
+1. Create a new database
+2. Under the folder `src/utils/db` change the name of the file `dbConnection.template.ts` to `dbConnection.ts` and apply your own database configuration (we are well aware that .env is a better solution, but they can't be loaded when running ts-node in the following way).
+   Add the following values to the `mssqlConfig`-object:
+   - **database** (database name)
+   - **user** (database username)
+   - **password** (database password)
 
 ### Step 4: Run database scripts + add data
 
-Firstly, execute the .sql scripts found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/scripts) in your own database.
+1. Firstly execute the `table.sql` script found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/sql/tables.sql) in your own database.
 
-Secondly, to add data to the database, open a new terminal, navigate to `src/scraper`and run
+2. Secondly, to add data to the database, open a new terminal, navigate to `src/scraper`and run
 
 ```
-ts-node index.ts
+npx ts-node index.ts
 ```
 
-this will read the data from all .csv-files and add the appropriate values to our defined tables.
+This will read the data from all .csv-files and add them to the database.
+
+3. Now it's time to create the stored procedures. For this simply run
+
+```
+npm run sp
+```
+
+Now you should be ready to explore the data via our API.
 
 ### Step 5: Run server
 

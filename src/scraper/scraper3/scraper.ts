@@ -1,12 +1,11 @@
 import fs from "fs";
 import { parse } from "csv-parse";
-import { mssqlConfig } from "../../utils/db/dbConnection";
-import sql from "mssql";
 import { format } from "date-fns";
+import * as path from "path";
 
 const scraper3 = async (con: any) => {
   return new Promise((resolve, reject) => {
-    const path = "src/scraper/data/2016_Citywide_GHG_Emissions_20240207.csv";
+    const csvFilePath = path.resolve(__dirname, "2016_Citywide_GHG_Emissions_20240207.csv");
 
     const records: any[] = [];
 
@@ -15,7 +14,7 @@ const scraper3 = async (con: any) => {
       from_line: 2,
     });
 
-    fs.createReadStream(path)
+    fs.createReadStream(csvFilePath)
       .pipe(parser)
       .on("data", (data) => {
         const obj: any = {};
@@ -66,7 +65,7 @@ const scraper3 = async (con: any) => {
         records.push(obj);
       })
       .on("end", async () => {
-        console.log("Read all records in csv", path, "// Rows:", records.length);
+        console.log("Read all records in csv", csvFilePath, "// Rows:", records.length);
         console.log("Inserting records into database...");
 
         try {
