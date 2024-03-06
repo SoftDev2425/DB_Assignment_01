@@ -16,13 +16,7 @@ Group E:
 
 Our plan involved developing a simple server where the developer can access it,
 enabling interaction with the underlying database layer through various procedures
-corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)). The following are the steps we took in developing our solution.
-
-- Firstly we examined the 5 given datasets and discovered that they contained emission targets and actual emission data for various local organisations worldwide, along with their locations (city and country) and additional geographical data. These datasets included both C40 and non-C40 members ("C40 is a global network of mayors of the world’s leading cities that are united in action to confront the climate crisis" - [c40.org](https://www.c40.org/))
-- Based on the shared data across the .csv-files, we decided to visualize and create a simple ER-diagram to gain a better understanding of the relationships between the entities and attributes within the datasets helping us with designing our database.
-  ![ER-diagram](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/imgs/ER_visualisation_v0.png)
-
-![ER-diagram](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/imgs/ER_diagram_LATEST.png)
+corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)). Read the report [here](https://typst.app/project/r-3FsUMzydTBaRJdngSmSY)
 
 ## How to run
 
