@@ -46,7 +46,7 @@ npm install
 
 ### Step 4: Run database scripts + add data + stored procedures
 
-1. Firstly copy the content of the `table.sql` script found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/sql/tables.sql) and execute it in your own database. If you'd like, validate that the tables exist.
+1. Firstly copy the content of the `table.sql` script found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/sql/tables.sql) and execute it in your own database.
 
 2. Secondly, to add data to the database, open a new terminal and run
 
@@ -54,15 +54,14 @@ npm install
 npm run scrape
 ```
 
-This will read the data from all .csv-files and add them to your database. If you'd like, validate that the data now exists.
+This will read the data from all .csv-files and add them to your database.
 
-3. Now it's time to create the stored procedures. For this simply run
+1. Now it's time to create the stored procedures. For this simply run
 
 ```
 npm run sp
 ```
 
-If you'd like, validate that the stored procedures now exist. <br> <br>
 Now you should be ready to explore the data via our API.
 
 ### Step 5: Run server
