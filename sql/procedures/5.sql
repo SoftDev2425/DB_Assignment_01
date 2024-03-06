@@ -1,4 +1,5 @@
 CREATE PROCEDURE GetCitiesWithEmissionsRanking
+    @Order VARCHAR(4)
 AS
 BEGIN
     DECLARE @MostRecentYear INT;
@@ -21,5 +22,7 @@ BEGIN
     INNER JOIN Organisations o ON c.id = o.cityID
     INNER JOIN GHG_Emissions e ON o.id = e.organisationID AND e.reportingYear = @MostRecentYear
     INNER JOIN EmissionStatusTypes est ON e.emissionStatusTypeID = est.id
-    ORDER BY e.totalCityWideEmissionsCO2 DESC;
+    ORDER BY 
+        CASE when @Order ='DESC' THEN e.totalCityWideEmissionsCO2 END DESC,
+        CASE WHEN @Order = 'ASC' THEN e.totalCityWideEmissionsCO2 END ASC;
 END;
