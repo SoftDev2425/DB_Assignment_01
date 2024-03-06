@@ -56,7 +56,7 @@ npm run scrape
 
 This will read the data from all .csv-files and add them to your database.
 
-1. Now it's time to create the stored procedures. For this simply run
+3. Now it's time to create the stored procedures. For this simply run
 
 ```
 npm run sp
