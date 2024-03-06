@@ -1,5 +1,3 @@
-One exution for all that adds all tables + scrapes adds procedures
-
 # DB Assignment 1
 
 ## Table of content
@@ -16,11 +14,13 @@ Group E:
 - Owais Dashti
 - Rasmus Taul
 
-Our plan involves developing a simple server where the developer can access our server,
-which in turn interacts with the underlying database layer through various procedures
-corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)).
-<br>
-Explain a lot here......
+Our plan involved developing a simple server where the developer can access it,
+enabling interaction with the underlying database layer through various procedures
+corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)). The following are the steps we took in developing our solution.
+
+- Firstly we examined the 5 given datasets and discovered that they contained emission targets and actual emission data for various local organisations worldwide, along with their locations (city and country) and additional geographical data. These datasets included both C40 and non-C40 members ("C40 is a global network of mayors of the world’s leading cities that are united in action to confront the climate crisis" - [c40.org](https://www.c40.org/))
+- Based on the shared data across the .csv-files, we decided to visualize and create a simple ER-diagram to gain a better understanding of the relationships between the entities and attributes within the datasets helping us with designing our database.
+  ![ER-diagram](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/imgs/ER_visualisation_v0.png)
 
 ![ER-diagram](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/imgs/ER_diagram_LATEST.png)
 
@@ -43,23 +43,24 @@ npm install
 ### Step 3: Configure DB-connection
 
 1. Create a new database
-2. Under the folder `src/utils/db` change the name of the file `dbConnection.template.ts` to `dbConnection.ts` and apply your own database configuration (we are well aware that .env is a better solution, but they can't be loaded when running ts-node in the following way).
-   Add the following values to the `mssqlConfig`-object:
+2. Under the folder `src/utils/db` create a copy of the file `dbConnection.template.ts` and rename it to `dbConnection.ts`
+3. In the file `dbConnection.ts` apply your own database configuration (we are well aware that .env could potentialy be a better solution, but they can't be loaded when running ts-node in the upcoming way).
+   <br>Add the following values to the `mssqlConfig`-object:
    - **database** (database name)
    - **user** (database username)
    - **password** (database password)
 
-### Step 4: Run database scripts + add data
+### Step 4: Run database scripts + add data + stored procedures
 
-1. Firstly execute the `table.sql` script found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/sql/tables.sql) in your own database.
+1. Firstly copy the content of the `table.sql` script found [HERE](https://github.com/SoftDev2425/DB_Assignment_01/blob/master/sql/tables.sql) and execute it in your own database. If you'd like, validate that the tables exist.
 
-2. Secondly, to add data to the database, open a new terminal, navigate to `src/scraper`and run
+2. Secondly, to add data to the database, open a new terminal and run
 
 ```
-npx ts-node index.ts
+npm run scrape
 ```
 
-This will read the data from all .csv-files and add them to the database.
+This will read the data from all .csv-files and add them to your database. If you'd like, validate that the data now exists.
 
 3. Now it's time to create the stored procedures. For this simply run
 
@@ -67,11 +68,12 @@ This will read the data from all .csv-files and add them to the database.
 npm run sp
 ```
 
+If you'd like, validate that the stored procedures now exist. <br> <br>
 Now you should be ready to explore the data via our API.
 
 ### Step 5: Run server
 
-Run:
+To start the server 'hosting' the api, run the following command:
 
 ```
 npm run dev
@@ -81,94 +83,69 @@ The API will now be available at [http://localhost:3000](http://localhost:3000/)
 
 ## Api docs:
 
-[DOCS](https://docs.google.com/document/d/1EWZ7qr1UmAC5B766JUoVxhJM8ysa296O6u1XBFe5CsI/edit#heading=h.c30eq7rmwd2)
+[DOCS](https://docs.google.com/document/d/1EWZ7qr1UmAC5B766JUoVxhJM8ysa296O6u1XBFe5CsI/edit#heading=h.c30eq7rmwd2) \* includes sample responses
 
-### 1. /api/...
+## Question 1: What are the total emissions (metric tonnes CO2e) for a specific city?
 
-Question: ... <br>
-Example response:
+### /api/emissions/total/:cityName
 
-```
-/.../...
-```
+Example call: [/api/emissions/total/Johannesburg](http://localhost:3000/api/emissions/total/Johannesburg)<br>
 
-### 2. /api/...
+## Question 2: What are the cities that have a decrease or increase in emissions?
 
-Question: ... <br>
-Example response:
+### /api/emissions/status/:statusType
 
-```
-/.../...
-```
+Example call: [/api/emissions/status/increased](http://localhost:3000/api/emissions/status/increased)<br>
+variables ("increased" || "decreased")
 
-### 3. /api/...
+## Question 3: For cities participating in the C40 network, what is the average total emission of all cities, and how does it compare to all non-C40 cities?
 
-Question: ... <br>
-Example response:
+### /api/emissions/avg
 
-```
-/.../...
-```
+Example call: [/api/emissions/avg](http://localhost:3000/api/emissions/avg)<br>
 
-### 4. /api/...
+## Question 4: What are the different cities emission targets?
 
-Question: ... <br>
-Example response:
+### /api/emissions/targets/:cityName
 
-```
-/.../...
-```
+Example call: [/api/emissions/targets/Copenhagen](http://localhost:3000/api/emissions/targets/Copenhagen)<br>
 
-### 5. /api/...
+## Question 5: Which cities have the highest total emission?
 
-Question: ... <br>
-Example response:
+### /api/emissions/ranked/:sortBy?
 
-```
-/.../...
-```
+Example call (default): [/api/emissions/ranked](http://localhost:3000/api/emissions/ranked)<br>
+Example call: [/api/emissions/ranked/asc](http://localhost:3000/api/emissions/ranked/asc)<br>
+Example call: [/api/emissions/ranked/desc](http://localhost:3000/api/emissions/ranked/desc)<br>
 
-### 6. /api/...
+## Question 6: What are the emission of the different cities?
 
-Question: ... <br>
-Example response:
+### /api/emissions/cities
 
-```
-/.../...
-```
+Example call: [/api/emissions/cities](http://localhost:3000/api/emissions/cities)<br>
 
-### 7. /api/...
+## Question 7: Cities that participate in the c40 network and their emissions.
 
-Question: ... <br>
-Example response:
+### /api/emissions/cities/c40/:isC40?
 
-```
-/.../...
-```
+Example call (default true): [/api/emissions/cities/c40](http://localhost:3000/api/emissions/cities/c40)<br>
+Example call: [/api/emissions/cities/c40/true](http://localhost:3000/api/emissions/cities/c40/true)<br>
+Example call: [/api/emissions/cities/c40/false](http://localhost:3000/api/emissions/cities/c40/false)
 
-### 8. /api/...
+## Question 8: What is the total emission for the different regions?
 
-Question: ... <br>
-Example response:
+### /api/emissions/regions
 
-```
-/.../...
-```
+Example call: [/api/emissions/regions](http://localhost:3000/api/emissions/regions)<br>
 
-### 9. /api/...
+## Question 9: What is the total emission for the different countries?
 
-Question: ... <br>
-Example response:
+### /api/emissions/countries
 
-```
-/.../...
-```
+Example call: [/api/emissions/countries](http://localhost:3000/api/emissions/countries)<br>
 
-### 10. /api/...
+## Question 10: What are the most prominent gasses based on country?
 
-Question: ... <br>
-Example response:
+### /api/emission/countries/gas
 
-```
-/.../...
-```
+Example call: [/api/emissions/countries/gas](http://localhost:3000/api/emissions/countries/gas)

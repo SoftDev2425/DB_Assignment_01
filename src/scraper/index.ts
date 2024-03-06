@@ -24,7 +24,7 @@ export const scrapeAndInsertIntoDatabase = async (con?: any) => {
 
     await con.close();
 
-    console.log("All scrapers done! Now onto adding the stored procedures :)");
+    console.log("All scrapers done! Now onto adding the stored procedures :)\n Run 'npm run sp'");
   } catch (error) {
     console.error("Error occurred while running scrapers:", error);
   }

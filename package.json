@@ -7,7 +7,8 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node build/index.js",
-    "sp": "ts-node src/sp_setup.ts"
+    "scrape": "npx ts-node src/scraper/index.ts",
+    "sp": "npx ts-node src/sp_setup.ts"
   },
   "keywords": [],
   "author": "",
