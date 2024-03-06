@@ -55,8 +55,8 @@ const scraper4 = async (con: any) => {
           comment: data[17].trim() || "",
           gassesIncluded: data[12].trim() || "",
           totalCityWideEmissionsCO2: isNaN(parseInt(data[13])) ? null : parseInt(data[13]),
-          totalScope1CO2: isNaN(parseInt(data[14])) ? null : parseInt(data[14]),
-          totalScope2CO2: isNaN(parseInt(data[15])) ? null : parseInt(data[15]),
+          totalScope1CO2: isNaN(parseInt(data[15])) ? null : parseInt(data[15]),
+          totalScope2CO2: isNaN(parseInt(data[16])) ? null : parseInt(data[16]),
         };
 
         obj.organisation = organisation;
