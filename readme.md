@@ -66,7 +66,7 @@ Now you should be ready to explore the data via our API.
 
 ### Step 5: Run server
 
-To start the server 'hosting' the api, run the following command:
+To start the server run the following command:
 
 ```
 npm run dev
