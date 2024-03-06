@@ -24,5 +24,5 @@ BEGIN
     INNER JOIN EmissionStatusTypes est ON e.emissionStatusTypeID = est.id
     ORDER BY 
         CASE when @Order ='DESC' THEN e.totalCityWideEmissionsCO2 END DESC,
-        CASE WHEN @Order = 'ASC' THEN e.totalCityWideEmissionsCO2 END ASC;
+        CASE WHEN @Order = 'ASC' THEN e.totalCityWideEmissionsCO2 END ASC
 END;

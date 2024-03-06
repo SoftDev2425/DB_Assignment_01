@@ -1,10 +1,4 @@
-IF OBJECT_ID('GetC40Cities', 'P') IS NOT NULL
-BEGIN
-    DROP PROCEDURE GetC40Cities;
-END
-GO
-
-CREATE PROCEDURE GetC40Cities
+CREATE PROCEDURE GetC40CitiesWithEmissions
 @C40Status BIT
 AS
 BEGIN
@@ -55,4 +49,4 @@ BEGIN
     ORDER BY c.name;
 END;
 
-EXEC GetC40Cities @C40Status = 1;
+EXEC GetC40CitiesWithEmissions @C40Status = 1;

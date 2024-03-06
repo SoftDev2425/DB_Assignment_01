@@ -50,10 +50,10 @@ export const getCityEmissionTargets = async (city: string) => {
 };
 
 // 5
-export const getCitiesWithEmissionsRanking = async (statusType = "asc") => {
+export const getCitiesWithEmissionsRanking = async (statusType: "ASC" | "DESC" = "DESC") => {
   try {
     await sql.connect(mssqlConfig);
-    const result = await sql.query`EXEC GetCitiesWithEmissionsRanking`;
+    const result = await sql.query`EXEC GetCitiesWithEmissionsRanking @Order = ${statusType}`;
     return result.recordset;
   } catch (error) {
     console.error("Error:", error);
@@ -64,6 +64,16 @@ export const getCitiesWithEmissionsRanking = async (statusType = "asc") => {
 // 6
 
 // 7
+export const getC40CitiesWithEmissions = async (c40: boolean = true) => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetC40CitiesWithEmissions @C40Status = ${c40 ? 1 : 0};`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
 
 // 8
 export const getTotalEmissionsForRegions = async () => {
@@ -75,7 +85,7 @@ export const getTotalEmissionsForRegions = async () => {
     console.error("Error:", error);
     throw error;
   }
-}
+};
 
 // 9
 export const getTotalEmissionsForCountries = async () => {
@@ -87,8 +97,7 @@ export const getTotalEmissionsForCountries = async () => {
     console.error("Error:", error);
     throw error;
   }
-}
-
+};
 
 // 10
 export const getContriesMostProminentGasses = async () => {
@@ -101,6 +110,3 @@ export const getContriesMostProminentGasses = async () => {
     throw error;
   }
 };
-
-
-
