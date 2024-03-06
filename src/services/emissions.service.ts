@@ -62,6 +62,16 @@ export const getCitiesWithEmissionsRanking = async (statusType: "ASC" | "DESC" =
 };
 
 // 6
+export const getCitiesEmisions = async () => {
+  try {
+    await sql.connect(mssqlConfig);
+    const result = await sql.query`EXEC GetCitiesEmissions;`;
+    return result.recordset;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
 
 // 7
 export const getC40CitiesWithEmissions = async (c40: boolean = true) => {

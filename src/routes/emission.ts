@@ -9,6 +9,7 @@ import {
   getTotalEmissionsForRegions,
   getTotalEmissionsForCountries,
   getC40CitiesWithEmissions,
+  getCitiesEmisions,
 } from "../services/emissions.service";
 
 interface Params {
@@ -163,6 +164,43 @@ export async function emissionRoutes(fastify: FastifyInstance) {
   });
 
   // 6
+  fastify.get("/cities", async function (request: FastifyRequest<{ Params: Params }>, reply: FastifyReply) {
+    try {
+      const data = await getCitiesEmisions();
+      return data.map((d) => {
+        return {
+          city: {
+            id: d.CityID,
+            name: d.CityName,
+            population: d.Population,
+            c40Status: d.C40Status,
+          },
+          country: {
+            id: d.CountryID,
+            name: d.CountryName,
+            region: d.RegionName,
+          },
+          emission: {
+            id: d.emissionID,
+            reportingYear: d.reportingYear ? d.reportingYear : "N/A",
+            measurementYear: d.measurementYear ? d.measurementYear : "N/A",
+            total: d.TotalCityWideEmissionsCO2 ? d.TotalCityWideEmissionsCO2 : "N/A",
+            totalScope1Emission: d.TotalScope1_CO2 ? d.TotalScope1_CO2 : "N/A",
+            totalScope2Emission: d.TotalScope2_CO2 ? d.TotalScope2_CO2 : "N/A",
+            methodology: d.methodology ? d.methodology : "N/A",
+            methodologyDetails: d.methodologyDetails ? d.methodologyDetails : "N/A",
+            gassesIncluded: d.gassesIncluded ? d.gassesIncluded : "N/A",
+            change: d.EmissionStatus ? d.EmissionStatus : "N/A",
+            description: d.Description ? d.Description : "N/A",
+            comment: d.Comment ? d.Comment : "No comment",
+          },
+        };
+      });
+    } catch (error: any) {
+      fastify.log.error(error);
+      reply.code(500).send({ error: error.message });
+    }
+  });
 
   // 7
   fastify.get("/cities/c40/:isC40?", async function (request: FastifyRequest<{ Params: Params }>, reply: FastifyReply) {
