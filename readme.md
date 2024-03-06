@@ -76,7 +76,7 @@ The API will now be available at [http://localhost:3000](http://localhost:3000/)
 
 ## Api docs:
 
-[DOCS](https://docs.google.com/document/d/1EWZ7qr1UmAC5B766JUoVxhJM8ysa296O6u1XBFe5CsI/edit#heading=h.c30eq7rmwd2) \* includes sample responses
+[DOCS](https://docs.google.com/document/d/1EWZ7qr1UmAC5B766JUoVxhJM8ysa296O6u1XBFe5CsI/edit?usp=sharing) \* includes sample responses
 
 ## Question 1: What are the total emissions (metric tonnes CO2e) for a specific city?
 
