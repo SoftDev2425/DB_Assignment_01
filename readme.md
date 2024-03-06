@@ -16,7 +16,7 @@ Group E:
 
 Our plan involved developing a simple server where the developer can access it,
 enabling interaction with the underlying database layer through various procedures
-corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)). Read the report [here](https://typst.app/project/r-3FsUMzydTBaRJdngSmSY)
+corresponding to our 10 relevant questions to the given datasets ([found here](https://github.com/SoftDev2425/DB_Assignment_01/tree/master/src/scraper/data)). Read the report [here](https://typst.app/project/r-3FsUMzydTBaRJdngSmSY).
 
 ## How to run
 
